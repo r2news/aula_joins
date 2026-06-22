@@ -1,0 +1,1816 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JOINS em MySQL - Aula Profissional | Prof. Reinaldo Rodrigues</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .presentation-container {
+            width: 100%;
+            max-width: 1200px;
+            background: #1e1e1e;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            overflow: hidden;
+            color: #e0e0e0;
+        }
+
+        .slide {
+            display: none;
+            min-height: 720px;
+            padding: 60px 80px;
+            animation: fadeIn 0.6s ease-in;
+            overflow-y: auto;
+            max-height: 90vh;
+            background: linear-gradient(to bottom, #1e1e1e, #252525);
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide-title {
+            font-size: 2.8em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 30px;
+            text-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .slide-subtitle {
+            font-size: 1.3em;
+            color: #b0b0b0;
+            margin-bottom: 50px;
+            font-weight: 300;
+        }
+
+        .part-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        .content-block {
+            margin: 30px 0;
+            padding: 25px;
+            background: #2d2d2d;
+            border-left: 4px solid #667eea;
+            border-radius: 6px;
+            line-height: 1.8;
+        }
+
+        .content-block h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .content-block p {
+            color: #c0c0c0;
+            margin-bottom: 12px;
+        }
+
+        .code-block {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+            overflow-x: auto;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .code-block code {
+            color: #c9d1d9;
+            font-family: 'Courier New', monospace;
+        }
+
+        .hljs {
+            background: #0d1117 !important;
+            color: #c9d1d9 !important;
+        }
+
+        .example-table {
+            width: 100%;
+            margin: 20px 0;
+            border-collapse: collapse;
+            font-size: 0.95em;
+        }
+
+        .example-table th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .example-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #3d3d3d;
+            color: #c0c0c0;
+        }
+
+        .example-table tr:hover {
+            background: #383838;
+        }
+
+        .comparison-table {
+            width: 100%;
+            margin: 20px 0;
+            border-collapse: collapse;
+            font-size: 0.9em;
+        }
+
+        .comparison-table th {
+            background: #764ba2;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .comparison-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #3d3d3d;
+            color: #c0c0c0;
+        }
+
+        .diagram-box {
+            background: #2d2d2d;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .diagram-box h4 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+
+        .flow-diagram {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .flow-item {
+            background: #3d3d3d;
+            padding: 15px 25px;
+            border-radius: 6px;
+            color: #c0c0c0;
+            border: 1px solid #667eea;
+            font-weight: 500;
+        }
+
+        .flow-arrow {
+            color: #667eea;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .key-concept {
+            background: #3d3d3d;
+            border-left: 4px solid #764ba2;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .key-concept strong {
+            color: #764ba2;
+        }
+
+        .highlight-yellow {
+            background-color: rgba(102, 126, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #ffd700;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 30px;
+            background: #0d1117;
+            border-top: 1px solid #3d3d3d;
+        }
+
+        .nav-button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .nav-button:disabled {
+            background: #4a4a4a;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            color: #b0b0b0;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .exercise-section {
+            background: linear-gradient(to right, #2d2d2d, #3d3d3d);
+            border: 2px solid #764ba2;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+
+        .exercise-section h3 {
+            color: #764ba2;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .exercise-section ol {
+            color: #c0c0c0;
+            margin-left: 25px;
+            line-height: 1.8;
+        }
+
+        .exercise-section li {
+            margin-bottom: 12px;
+        }
+
+        .success-message {
+            background: #1e3a1f;
+            border-left: 4px solid #4caf50;
+            color: #81c784;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+
+        .warning-message {
+            background: #3a2a1e;
+            border-left: 4px solid #ff9800;
+            color: #ffb74d;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+
+        .table-results {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+
+        .header-section {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 80px 60px;
+            text-align: center;
+            color: white;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .header-section h1 {
+            font-size: 3.2em;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .header-section p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .objectives-list {
+            list-style: none;
+            margin: 20px 0;
+        }
+
+        .objectives-list li {
+            padding: 12px 20px;
+            margin: 10px 0;
+            background: #2d2d2d;
+            border-left: 4px solid #667eea;
+            border-radius: 4px;
+            color: #c0c0c0;
+            display: flex;
+            align-items: center;
+        }
+
+        .objectives-list li:before {
+            content: "✓";
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 15px;
+            font-size: 1.2em;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .column {
+            background: #2d2d2d;
+            padding: 25px;
+            border-radius: 6px;
+            border: 1px solid #667eea;
+        }
+
+        .column h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .column p {
+            color: #c0c0c0;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 1024px) {
+            .slide {
+                padding: 40px 40px;
+            }
+
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+
+            .slide-title {
+                font-size: 2em;
+            }
+        }
+
+        .sql-practice {
+            background: #2d2d2d;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+
+        .sql-practice h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .practice-input {
+            width: 100%;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            color: #c9d1d9;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            border-radius: 4px;
+            min-height: 100px;
+            margin: 15px 0;
+        }
+
+        .practice-button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .practice-button:hover {
+            background: #764ba2;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- SLIDE 1: PÁGINA DE TÍTULO -->
+        <div class="slide active">
+            <div class="header-section" style="margin: -60px -80px 0 -80px; padding: 80px 60px;">
+                <h1>JOINS EM MYSQL</h1>
+                <p>Transformando Dados Separados em Informações Completas</p>
+                <p style="margin-top: 30px; font-size: 1em; opacity: 0.9;">
+                    Curso: Administrador de Banco de Dados (PRONATEC/FIC)<br>
+                    Fundação Helena Antipoff - ETSSA<br>
+                    Professor Reinaldo Rodrigues
+                </p>
+            </div>
+            <div style="margin-top: 80px;">
+                <div class="part-badge">AULA COMPLETA</div>
+                <h2 style="color: #667eea; font-size: 1.8em; margin: 40px 0;">O que você aprenderá</h2>
+                <ul class="objectives-list">
+                    <li>Entender por que dados são separados em tabelas diferentes</li>
+                    <li>Compreender chave primária e chave estrangeira</li>
+                    <li>Dominar INNER JOIN para relacionamentos com correspondência</li>
+                    <li>Aplicar LEFT JOIN para manter registros da tabela principal</li>
+                    <li>Usar filtros, ordenação e agrupamentos em consultas complexas</li>
+                    <li>Evitar erros comuns e seguir boas práticas profissionais</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ================== PARTE 1 ================== -->
+
+        <!-- SLIDE 2: INTRODUÇÃO PARTE 1 -->
+        <div class="slide">
+            <div class="part-badge" style="background: linear-gradient(135deg, #667eea, #764ba2);">PARTE 1</div>
+            <h2 class="slide-title">Fundamentos dos JOINs</h2>
+            <p class="slide-subtitle">Estrutura de dados relacionais e relacionamento entre tabelas</p>
+            
+            <div class="content-block">
+                <h3>📊 Estrutura da Aula - Parte 1</h3>
+                <p><strong>1.</strong> Por que os dados ficam separados em tabelas?</p>
+                <p><strong>2.</strong> Chave Primária e Chave Estrangeira</p>
+                <p><strong>3.</strong> Preparação do Ambiente e Dados de Exemplo</p>
+                <p><strong>4.</strong> SELECT Básico antes do JOIN</p>
+                <p><strong>5.</strong> INNER JOIN: Conceito e Exemplos Práticos</p>
+                <p><strong>6.</strong> Alias: Escrita Profissional de SQL</p>
+            </div>
+
+            <div class="key-concept">
+                <strong>💡 Conceito Principal:</strong> Um JOIN é o recurso usado para <span class="highlight-yellow">transformar dados separados em informações completas</span>, permitindo que você combine informações de múltiplas tabelas usando uma coluna em comum.
+            </div>
+        </div>
+
+        <!-- SLIDE 3: POR QUE DADOS SEPARADOS -->
+        <div class="slide">
+            <div class="part-badge">PARTE 1</div>
+            <h2 class="slide-title">Por Que Dados Ficam Separados?</h2>
+            
+            <div class="content-block">
+                <h3>Princípios de Banco de Dados Relacional</h3>
+                <p>Em um banco de dados relacional, cada tabela deve representar <strong>um assunto específico</strong>. Essa organização oferece vários benefícios:</p>
+            </div>
+
+            <div class="two-column">
+                <div class="column">
+                    <h4>✓ Evita Repetição</h4>
+                    <p>Não repetir o nome do cliente em cada venda. Armazena apenas uma vez.</p>
+                </div>
+                <div class="column">
+                    <h4>⚡ Melhora Performance</h4>
+                    <p>Tabelas menores são processadas mais rapidamente pelo MySQL.</p>
+                </div>
+            </div>
+
+            <div class="two-column">
+                <div class="column">
+                    <h4>🔧 Facilita Manutenção</h4>
+                    <p>Alterar dados centralizados é mais seguro e eficiente.</p>
+                </div>
+                <div class="column">
+                    <h4>🛡️ Reduz Erros</h4>
+                    <p>Dados únicos em um lugar = menos inconsistências.</p>
+                </div>
+            </div>
+
+            <div class="diagram-box">
+                <h4>Exemplo: Sistema de Vendas</h4>
+                <table class="comparison-table">
+                    <tr>
+                        <th>Tabela</th>
+                        <th>Responsabilidade</th>
+                    </tr>
+                    <tr>
+                        <td><strong>clientes</strong></td>
+                        <td>Armazena cadastro: id, nome, cidade</td>
+                    </tr>
+                    <tr>
+                        <td><strong>vendas</strong></td>
+                        <td>Armazena transações: id_venda, id_cliente, data, valor</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- SLIDE 4: CHAVES PRIMÁRIA E ESTRANGEIRA -->
+        <div class="slide">
+            <div class="part-badge">PARTE 1</div>
+            <h2 class="slide-title">Chave Primária e Chave Estrangeira</h2>
+            
+            <div class="content-block">
+                <h3>🔑 O Fundamento do Relacionamento</h3>
+                <p>Antes de usar JOIN, você precisa entender como as tabelas se conectam.</p>
+            </div>
+
+            <div class="two-column">
+                <div class="column">
+                    <h4>Chave Primária (PK)</h4>
+                    <p style="margin-bottom: 15px;"><strong>Definição:</strong> Identificador único de cada registro em uma tabela.</p>
+                    <p style="margin-bottom: 15px;"><strong>Função:</strong> Garante que cada linha seja única (como um CPF).</p>
+                    <p><strong>Exemplo:</strong><br>
+                    <code style="background: #0d1117; padding: 5px; border-radius: 3px; color: #ffd700;">id_cliente INT PRIMARY KEY</code></p>
+                </div>
+                <div class="column">
+                    <h4>Chave Estrangeira (FK)</h4>
+                    <p style="margin-bottom: 15px;"><strong>Definição:</strong> Referência a uma chave primária de outra tabela.</p>
+                    <p style="margin-bottom: 15px;"><strong>Função:</strong> Cria o vínculo entre duas tabelas.</p>
+                    <p><strong>Exemplo:</strong><br>
+                    <code style="background: #0d1117; padding: 5px; border-radius: 3px; color: #ffd700;">FOREIGN KEY (id_cliente)</code></p>
+                </div>
+            </div>
+
+            <div class="diagram-box">
+                <h4>Visualização da Relação</h4>
+                <div class="flow-diagram">
+                    <div class="flow-item">
+                        <strong>Tabela CLIENTES</strong><br>
+                        <small>id_cliente = 1 (PK)</small>
+                    </div>
+                    <div class="flow-arrow">←→</div>
+                    <div class="flow-item">
+                        <strong>Tabela VENDAS</strong><br>
+                        <small>id_cliente = 1 (FK)</small>
+                    </div>
+                </div>
+                <p style="color: #b0b0b0; margin-top: 20px; font-size: 0.95em;">A chave estrangeira em VENDAS aponta para a chave primária em CLIENTES</p>
+            </div>
+        </div>
+
+        <!-- SLIDE 5: AMBIENTE E DADOS -->
+        <div class="slide">
+            <div class="part-badge">PARTE 1</div>
+            <h2 class="slide-title">Preparando o Ambiente</h2>
+            
+            <div class="content-block">
+                <h3>Criar Banco de Dados e Tabelas</h3>
+            </div>
+
+            <div class="code-block">
+<pre><code class="language-sql">-- Criar o banco de dados
+CREATE DATABASE aula_joins;
+USE aula_joins;
+
+-- Criar tabela de clientes
+CREATE TABLE clientes (
+    id_cliente INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL,
+    cidade VARCHAR(100)
+);
+
+-- Criar tabela de vendas com chave estrangeira
+CREATE TABLE vendas (
+    id_venda INT PRIMARY KEY AUTO_INCREMENT,
+    id_cliente INT,
+    data_venda DATE,
+    valor DECIMAL(10,2),
+    FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente)
+);</code></pre>
+            </div>
+
+            <div class="key-concept">
+                <strong>⚙️ Explicação da Estrutura:</strong><br>
+                • <strong>AUTO_INCREMENT:</strong> Gera IDs automaticamente<br>
+                • <strong>NOT NULL:</strong> Campo obrigatório<br>
+                • <strong>FOREIGN KEY:</strong> Garante que o id_cliente em VENDAS existe em CLIENTES
+            </div>
+        </div>
+
+        <!-- SLIDE 6: INSERINDO DADOS DE EXEMPLO -->
+        <div class="slide">
+            <div class="part-badge">PARTE 1</div>
+            <h2 class="slide-title">Dados de Exemplo</h2>
+            
+            <div class="content-block">
+                <h3>Inserindo Dados para Prática</h3>
+            </div>
+
+            <div class="code-block">
+<pre><code class="language-sql">-- Inserir clientes
+INSERT INTO clientes (nome, cidade) VALUES
+('Maria Silva', 'Ibirité'),
+('João Souza', 'Contagem'),
+('Ana Costa', 'Belo Horizonte'),
+('Carlos Lima', 'Ibirité');
+
+-- Inserir vendas
+INSERT INTO vendas (id_cliente, data_venda, valor) VALUES
+(1, '2026-06-01', 1500.00),
+(2, '2026-06-03', 850.00),
+(1, '2026-06-10', 2300.00),
+(3, '2026-06-15', 1200.00);</code></pre>
+            </div>
+
+            <div class="warning-message">
+                <strong>⚠️ Detalhe Importante:</strong> O cliente <strong>Carlos Lima</strong> (id=4) foi cadastrado, mas <strong>NÃO possui venda</strong>. Isso é proposital! Usaremos esse caso para entender a diferença entre INNER JOIN e LEFT JOIN.
+            </div>
+        </div>
+
+        <!-- SLIDE 7: SELECT BÁSICO -->
+        <div class="slide">
+            <div class="part-badge">PARTE 1</div>
+            <h2 class="slide-title">SELECT Antes do JOIN</h2>
+            <p class="slide-subtitle">Visualizando tabelas separadas</p>
+            
+            <div class="code-block">
+<pre><code class="language-sql">SELECT * FROM clientes;</code></pre>
+            </div>
+
+            <table class="example-table">
+                <thead>
+                    <tr>
+                        <th>id_cliente</th>
+                        <th>nome</th>
+                        <th>cidade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Maria Silva</td>
+                        <td>Ibirité</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>João Souza</td>
+                        <td>Contagem</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Ana Costa</td>
+                        <td>Belo Horizonte</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Carlos Lima</td>
+                        <td>Ibirité</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="code-block" style="margin-top: 30px;">
+<pre><code class="language-sql">SELECT * FROM vendas;</code></pre>
+            </div>
+
+            <table class="example-table">
+                <thead>
+                    <tr>
+                        <th>id_venda</th>
+                        <th>id_cliente</th>
+                        <th>data_venda</th>
+                        <th>valor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>2026-06-01</td>
+                        <td>1500.00</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>2</td>
+                        <td>2026-06-03</td>
+                        <td>850.00</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>1</td>
+                        <td>2026-06-10</td>
+                        <td>2300.00</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>3</td>
+                        <td>2026-06-15</td>
+                        <td>1200.00</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="key-concept" style="margin-top: 30px;">
+                <strong>🤔 O Problema:</strong> Na tabela VENDAS, vemos apenas <span class="highlight-yellow">id_cliente = 1</span>, mas não sabemos quem é o cliente 1. Precisamos de NOMES para informações úteis!<br><br>
+                <strong>✨ A Solução:</strong> Usar <strong>JOIN</strong> para combinar as tabelas e mostrar os nomes dos clientes junto com suas vendas.
+            </div>
+        </div>
+
+        <!-- SLIDE 8: INNER JOIN CONCEITO -->
+        <div class="slide">
+            <div class="part-badge">PARTE 1</div>
+            <h2 class="slide-title">INNER JOIN - Conceito</h2>
+            
+            <div class="content-block">
+                <h3>O Tipo de JOIN Mais Comum</h3>
+                <p><strong>INNER JOIN</strong> mostra apenas os registros que possuem <span class="highlight-yellow">correspondência em ambas as tabelas</span>.</p>
+            </div>
+
+            <div class="diagram-box">
+                <h4>Visualização Lógica</h4>
+                <div style="display: flex; justify-content: center; align-items: center; gap: 20px; flex-wrap: wrap; margin: 30px 0;">
+                    <div style="background: #667eea; color: white; padding: 20px 30px; border-radius: 8px; font-weight: bold;">
+                        TABELA A<br><small>(clientes)</small>
+                    </div>
+                    <div style="color: #667eea; font-size: 1.5em; font-weight: bold;">∩</div>
+                    <div style="background: #667eea; color: white; padding: 20px 30px; border-radius: 8px; font-weight: bold;">
+                        TABELA B<br><small>(vendas)</small>
+                    </div>
+                </div>
+                <p style="color: #b0b0b0; margin-top: 20px;">Retorna apenas a <span class="highlight-yellow">interseção</span> entre as tabelas</p>
+            </div>
+
+            <table class="comparison-table">
+                <tr>
+                    <th>Aspecto</th>
+                    <th>INNER JOIN</th>
+                </tr>
+                <tr>
+                    <td><strong>O que mostra?</strong></td>
+                    <td>Apenas registros com correspondência em ambas as tabelas</td>
+                </tr>
+                <tr>
+                    <td><strong>Usa qual coluna?</strong></td>
+                    <td>A chave primária e a chave estrangeira (ON)</td>
+                </tr>
+                <tr>
+                    <td><strong>NULL aparece?</strong></td>
+                    <td>Nunca - registros sem match são excluídos</td>
+                </tr>
+                <tr>
+                    <td><strong>Caso de uso</strong></td>
+                    <td>Quando você quer apenas registros vinculados</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- SLIDE 9: INNER JOIN PRÁTICO -->
+        <div class="slide">
+            <div class="part-badge">PARTE 1</div>
+            <h2 class="slide-title">INNER JOIN - Exemplo Prático</h2>
+            
+            <div class="code-block">
+<pre><code class="language-sql">SELECT 
+    clientes.nome,
+    clientes.cidade,
+    vendas.data_venda,
+    vendas.valor
+FROM clientes
+INNER JOIN vendas
+    ON clientes.id_cliente = vendas.id_cliente;</code></pre>
+            </div>
+
+            <div class="key-concept">
+                <strong>📍 Linha ON:</strong><br>
+                <code style="background: #0d1117; padding: 8px; border-radius: 3px;">ON clientes.id_cliente = vendas.id_cliente</code><br><br>
+                Esta linha diz ao MySQL: "Junte as tabelas quando o id_cliente da tabela clientes for igual ao id_cliente da tabela vendas"
+            </div>
+
+            <table class="example-table" style="margin-top: 30px;">
+                <thead>
+                    <tr>
+                        <th>nome</th>
+                        <th>cidade</th>
+                        <th>data_venda</th>
+                        <th>valor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Maria Silva</td>
+                        <td>Ibirité</td>
+                        <td>2026-06-01</td>
+                        <td>1500.00</td>
+                    </tr>
+                    <tr>
+                        <td>João Souza</td>
+                        <td>Contagem</td>
+                        <td>2026-06-03</td>
+                        <td>850.00</td>
+                    </tr>
+                    <tr>
+                        <td>Maria Silva</td>
+                        <td>Ibirité</td>
+                        <td>2026-06-10</td>
+                        <td>2300.00</td>
+                    </tr>
+                    <tr>
+                        <td>Ana Costa</td>
+                        <td>Belo Horizonte</td>
+                        <td>2026-06-15</td>
+                        <td>1200.00</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="warning-message" style="margin-top: 30px;">
+                <strong>⚠️ Observe:</strong> <strong>Carlos Lima</strong> (id=4) não aparece no resultado! Ele está na tabela CLIENTES, mas não tem nenhuma venda em VENDAS. No INNER JOIN, registros sem correspondência são excluídos.
+            </div>
+        </div>
+
+        <!-- SLIDE 10: ALIAS -->
+        <div class="slide">
+            <div class="part-badge">PARTE 1</div>
+            <h2 class="slide-title">Alias: Escrita Profissional SQL</h2>
+            
+            <div class="content-block">
+                <h3>Utilizando Apelidos para Tabelas e Colunas</h3>
+                <p>Em consultas profissionais, usamos <strong>alias</strong> (apelidos) para deixar o código mais limpo e organizado.</p>
+            </div>
+
+            <div class="code-block">
+<pre><code class="language-sql">SELECT 
+    c.nome,                    -- alias 'c' para clientes
+    c.cidade,
+    v.data_venda,             -- alias 'v' para vendas
+    v.valor
+FROM clientes c                -- Define alias 'c' aqui
+INNER JOIN vendas v            -- Define alias 'v' aqui
+    ON c.id_cliente = v.id_cliente;</code></pre>
+            </div>
+
+            <div class="two-column">
+                <div class="column">
+                    <h4>Sem Alias (Ruim)</h4>
+                    <p><code style="background: #0d1117; padding: 5px;">clientes.nome</code></p>
+                    <p><code style="background: #0d1117; padding: 5px;">clientes.cidade</code></p>
+                    <p><code style="background: #0d1117; padding: 5px;">vendas.data_venda</code></p>
+                    <p style="margin-top: 10px; color: #ffb74d;">Repetitivo e cansativo</p>
+                </div>
+                <div class="column">
+                    <h4>Com Alias (Bom)</h4>
+                    <p><code style="background: #0d1117; padding: 5px;">c.nome</code></p>
+                    <p><code style="background: #0d1117; padding: 5px;">c.cidade</code></p>
+                    <p><code style="background: #0d1117; padding: 5px;">v.data_venda</code></p>
+                    <p style="margin-top: 10px; color: #81c784;">Conciso e profissional</p>
+                </div>
+            </div>
+
+            <div class="key-concept" style="margin-top: 30px;">
+                <strong>✅ Boas Práticas:</strong><br>
+                • Use abreviações curtas e lógicas (c para clientes, v para vendas)<br>
+                • Mantenha consistência na mesma consulta<br>
+                • Qualifique sempre as colunas ambíguas
+            </div>
+        </div>
+
+        <!-- SLIDE 11: RESUMO PARTE 1 -->
+        <div class="slide">
+            <div class="part-badge">PARTE 1 - RESUMO</div>
+            <h2 class="slide-title">O Que Você Aprendeu</h2>
+            
+            <div style="background: linear-gradient(to right, #2d2d2d, #3d3d3d); border: 2px solid #667eea; border-radius: 8px; padding: 40px;">
+                <ul class="objectives-list">
+                    <li>Por que separamos dados em tabelas diferentes (desempenho, manutenção, integridade)</li>
+                    <li>O que é chave primária (PK) e chave estrangeira (FK)</li>
+                    <li>Como o MySQL cria relacionamentos entre tabelas</li>
+                    <li>A sintaxe básica do INNER JOIN e o propósito da cláusula ON</li>
+                    <li>Como usar alias para escrever SQL profissional e legível</li>
+                    <li>Por que INNER JOIN exclui registros sem correspondência</li>
+                </ul>
+            </div>
+
+            <div class="key-concept" style="margin-top: 40px;">
+                <strong>🎯 Próximo Passo (Parte 2):</strong><br>
+                Você vai aprender <strong>LEFT JOIN</strong>, que mantém todos os registros da tabela principal, mesmo sem correspondência. Isso é essencial para relatórios que precisam mostrar dados completos (ex: todos os clientes, mesmo os que nunca compraram).
+            </div>
+        </div>
+
+        <!-- ================== PARTE 2 ================== -->
+
+        <!-- SLIDE 12: INTRODUÇÃO PARTE 2 -->
+        <div class="slide">
+            <div class="part-badge" style="background: linear-gradient(135deg, #764ba2, #667eea);">PARTE 2</div>
+            <h2 class="slide-title">Avançando com JOINs</h2>
+            <p class="slide-subtitle">LEFT JOIN, filtros, agrupamentos e boas práticas profissionais</p>
+            
+            <div class="content-block">
+                <h3>📊 Estrutura da Aula - Parte 2</h3>
+                <p><strong>1.</strong> LEFT JOIN: Conceito e Diferença do INNER JOIN</p>
+                <p><strong>2.</strong> Encontrando Registros Sem Relacionamento</p>
+                <p><strong>3.</strong> RIGHT JOIN: Entendimento Básico</p>
+                <p><strong>4.</strong> Filtros (WHERE) em Consultas com JOIN</p>
+                <p><strong>5.</strong> Ordenação (ORDER BY) e Agrupamento (GROUP BY)</p>
+                <p><strong>6.</strong> Erros Comuns e Boas Práticas</p>
+                <p><strong>7.</strong> Exercício Prático Interativo</p>
+            </div>
+
+            <div class="success-message">
+                <strong>💪 Você está preparado!</strong> Você já domina INNER JOIN e alias. Agora vai expandir seus conhecimentos para cenários mais complexos e realistas.
+            </div>
+        </div>
+
+        <!-- SLIDE 13: LEFT JOIN CONCEITO -->
+        <div class="slide">
+            <div class="part-badge">PARTE 2</div>
+            <h2 class="slide-title">LEFT JOIN - Conceito</h2>
+            
+            <div class="content-block">
+                <h3>Quando Você Quer Manter Todos da Tabela Principal</h3>
+                <p><strong>LEFT JOIN</strong> mostra <span class="highlight-yellow">todos os registros da tabela da esquerda</span>, completando com dados da tabela da direita quando houver correspondência.</p>
+            </div>
+
+            <div class="diagram-box">
+                <h4>Visualização Lógica</h4>
+                <div style="display: flex; justify-content: center; align-items: center; gap: 20px; flex-wrap: wrap; margin: 30px 0;">
+                    <div style="background: #764ba2; color: white; padding: 20px 30px; border-radius: 8px; font-weight: bold; position: relative;">
+                        TABELA A<br><small>(LEFT)</small>
+                        <div style="position: absolute; right: -10px; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.2); padding: 15px; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">→</div>
+                    </div>
+                    <div style="background: #3d3d3d; color: white; padding: 20px 30px; border-radius: 8px; font-weight: bold;">
+                        TABELA B<br><small>(RIGHT)</small>
+                    </div>
+                </div>
+                <p style="color: #b0b0b0; margin-top: 20px;">Retorna <strong>tudo da esquerda</strong> + dados correspondentes da direita</p>
+            </div>
+
+            <table class="comparison-table">
+                <tr>
+                    <th>Aspecto</th>
+                    <th>INNER JOIN</th>
+                    <th>LEFT JOIN</th>
+                </tr>
+                <tr>
+                    <td><strong>Registros?</strong></td>
+                    <td>Apenas com match</td>
+                    <td><strong>Todos da esquerda</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>Sem correspondência?</strong></td>
+                    <td>Excluído</td>
+                    <td><strong>Mantém com NULL</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>Melhor para?</strong></td>
+                    <td>Dados vinculados</td>
+                    <td><strong>Relatórios completos</strong></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- SLIDE 14: LEFT JOIN PRÁTICO -->
+        <div class="slide">
+            <div class="part-badge">PARTE 2</div>
+            <h2 class="slide-title">LEFT JOIN - Exemplo Prático</h2>
+            
+            <div class="code-block">
+<pre><code class="language-sql">SELECT 
+    c.nome,
+    c.cidade,
+    v.data_venda,
+    v.valor
+FROM clientes c
+LEFT JOIN vendas v
+    ON c.id_cliente = v.id_cliente;</code></pre>
+            </div>
+
+            <table class="example-table" style="margin-top: 30px;">
+                <thead>
+                    <tr>
+                        <th>nome</th>
+                        <th>cidade</th>
+                        <th>data_venda</th>
+                        <th>valor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Maria Silva</td>
+                        <td>Ibirité</td>
+                        <td>2026-06-01</td>
+                        <td>1500.00</td>
+                    </tr>
+                    <tr>
+                        <td>Maria Silva</td>
+                        <td>Ibirité</td>
+                        <td>2026-06-10</td>
+                        <td>2300.00</td>
+                    </tr>
+                    <tr>
+                        <td>João Souza</td>
+                        <td>Contagem</td>
+                        <td>2026-06-03</td>
+                        <td>850.00</td>
+                    </tr>
+                    <tr>
+                        <td>Ana Costa</td>
+                        <td>Belo Horizonte</td>
+                        <td>2026-06-15</td>
+                        <td>1200.00</td>
+                    </tr>
+                    <tr style="background: #3a2a1e;">
+                        <td><strong>Carlos Lima</strong></td>
+                        <td><strong>Ibirité</strong></td>
+                        <td><span class="highlight-yellow">NULL</span></td>
+                        <td><span class="highlight-yellow">NULL</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="success-message" style="margin-top: 30px;">
+                <strong>✅ Observe:</strong> Agora <strong>Carlos Lima aparece no resultado</strong>! Ele está cadastrado mas não tem venda. Campos sem correspondência mostram <strong>NULL</strong>.
+            </div>
+        </div>
+
+        <!-- SLIDE 15: ENCONTRANDO SEM CORRESPONDÊNCIA -->
+        <div class="slide">
+            <div class="part-badge">PARTE 2</div>
+            <h2 class="slide-title">Encontrando Registros Sem Venda</h2>
+            
+            <div class="content-block">
+                <h3>Uma Aplicação Importante do LEFT JOIN</h3>
+                <p>O LEFT JOIN é perfeito para encontrar registros que existem na tabela principal, mas <strong>não têm correspondência</strong> na tabela relacionada.</p>
+            </div>
+
+            <div class="code-block">
+<pre><code class="language-sql">SELECT 
+    c.nome,
+    c.cidade
+FROM clientes c
+LEFT JOIN vendas v
+    ON c.id_cliente = v.id_cliente
+WHERE v.id_venda IS NULL;</code></pre>
+            </div>
+
+            <table class="example-table" style="margin-top: 30px;">
+                <thead>
+                    <tr>
+                        <th>nome</th>
+                        <th>cidade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Carlos Lima</strong></td>
+                        <td><strong>Ibirité</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="key-concept" style="margin-top: 30px;">
+                <strong>🔍 Como funciona?</strong><br>
+                1. LEFT JOIN mantém TODOS os clientes<br>
+                2. <strong>WHERE v.id_venda IS NULL</strong> filtra apenas os que não têm venda<br>
+                3. Resultado: clientes sem histórico de vendas
+            </div>
+
+            <div class="content-block" style="margin-top: 30px;">
+                <h4>Casos de Uso Reais</h4>
+                <p>✓ Clientes cadastrados que nunca compraram (alvo de marketing)</p>
+                <p>✓ Produtos cadastrados mas não vendidos (revisar estoque)</p>
+                <p>✓ Alunos matriculados sem notas lançadas (verificar professores)</p>
+                <p>✓ Equipamentos cadastrados sem chamados (verificar utilização)</p>
+            </div>
+        </div>
+
+        <!-- SLIDE 16: RIGHT JOIN -->
+        <div class="slide">
+            <div class="part-badge">PARTE 2</div>
+            <h2 class="slide-title">RIGHT JOIN - Conhecimento Básico</h2>
+            
+            <div class="content-block">
+                <h3>O Inverso do LEFT JOIN</h3>
+                <p>RIGHT JOIN mostra <strong>todos os registros da tabela da direita</strong>, mantendo NULL quando não há correspondência na tabela da esquerda.</p>
+            </div>
+
+            <div class="code-block">
+<pre><code class="language-sql">SELECT 
+    c.nome,
+    c.cidade,
+    v.data_venda,
+    v.valor
+FROM clientes c
+RIGHT JOIN vendas v
+    ON c.id_cliente = v.id_cliente;</code></pre>
+            </div>
+
+            <div class="warning-message">
+                <strong>💡 Dica Profissional:</strong> Na prática, você raramente precisa de RIGHT JOIN. A mesma lógica pode ser feita com LEFT JOIN invertendo a ordem das tabelas:
+            </div>
+
+            <div class="code-block">
+<pre><code class="language-sql">-- Equivalente a RIGHT JOIN:
+SELECT 
+    c.nome,
+    c.cidade,
+    v.data_venda,
+    v.valor
+FROM vendas v
+LEFT JOIN clientes c
+    ON v.id_cliente = c.id_cliente;</code></pre>
+            </div>
+
+            <div class="key-concept" style="margin-top: 30px;">
+                <strong>📌 Recomendação:</strong> Domine bem <strong>INNER JOIN</strong> e <strong>LEFT JOIN</strong>. Eles resolvem 95% dos casos. RIGHT JOIN é mais raro em trabalhos iniciais.
+            </div>
+        </div>
+
+        <!-- SLIDE 17: WHERE COM JOIN -->
+        <div class="slide">
+            <div class="part-badge">PARTE 2</div>
+            <h2 class="slide-title">Filtros (WHERE) em JOINs</h2>
+            
+            <div class="content-block">
+                <h3>Combinando JOIN com Condições</h3>
+                <p>Você pode usar <strong>WHERE</strong> para filtrar os resultados de uma consulta com JOIN, selecionando apenas dados que atendem a critérios específicos.</p>
+            </div>
+
+            <div class="code-block">
+<pre><code class="language-sql">SELECT 
+    c.nome,
+    c.cidade,
+    v.data_venda,
+    v.valor
+FROM clientes c
+INNER JOIN vendas v
+    ON c.id_cliente = v.id_cliente
+WHERE c.cidade = 'Ibirité';</code></pre>
+            </div>
+
+            <table class="example-table" style="margin-top: 30px;">
+                <thead>
+                    <tr>
+                        <th>nome</th>
+                        <th>cidade</th>
+                        <th>data_venda</th>
+                        <th>valor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Maria Silva</td>
+                        <td>Ibirité</td>
+                        <td>2026-06-01</td>
+                        <td>1500.00</td>
+                    </tr>
+                    <tr>
+                        <td>Maria Silva</td>
+                        <td>Ibirité</td>
+                        <td>2026-06-10</td>
+                        <td>2300.00</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="key-concept">
+                <strong>🔗 Ordem de Execução:</strong><br>
+                1. FROM/JOIN une as tabelas<br>
+                2. ON define o relacionamento<br>
+                3. <strong>WHERE filtra os resultados</strong> (último)
+            </div>
+        </div>
+
+        <!-- SLIDE 18: ORDER BY E GROUP BY -->
+        <div class="slide">
+            <div class="part-badge">PARTE 2</div>
+            <h2 class="slide-title">Ordenação e Agrupamento</h2>
+            
+            <div class="content-block">
+                <h3>ORDER BY: Organizando Resultados</h3>
+            </div>
+
+            <div class="code-block">
+<pre><code class="language-sql">SELECT 
+    c.nome AS cliente,
+    v.data_venda,
+    v.valor
+FROM clientes c
+INNER JOIN vendas v
+    ON c.id_cliente = v.id_cliente
+ORDER BY v.valor DESC;</code></pre>
+            </div>
+
+            <table class="example-table">
+                <thead>
+                    <tr>
+                        <th>cliente</th>
+                        <th>data_venda</th>
+                        <th>valor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Maria Silva</td>
+                        <td>2026-06-10</td>
+                        <td>2300.00</td>
+                    </tr>
+                    <tr>
+                        <td>Maria Silva</td>
+                        <td>2026-06-01</td>
+                        <td>1500.00</td>
+                    </tr>
+                    <tr>
+                        <td>Ana Costa</td>
+                        <td>2026-06-15</td>
+                        <td>1200.00</td>
+                    </tr>
+                    <tr>
+                        <td>João Souza</td>
+                        <td>2026-06-03</td>
+                        <td>850.00</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="content-block" style="margin-top: 30px;">
+                <h3>GROUP BY: Agrupando e Agregando Dados</h3>
+            </div>
+
+            <div class="code-block">
+<pre><code class="language-sql">SELECT 
+    c.nome AS cliente,
+    COUNT(v.id_venda) AS quantidade_vendas,
+    SUM(v.valor) AS total_vendido
+FROM clientes c
+INNER JOIN vendas v
+    ON c.id_cliente = v.id_cliente
+GROUP BY c.nome;</code></pre>
+            </div>
+
+            <table class="example-table">
+                <thead>
+                    <tr>
+                        <th>cliente</th>
+                        <th>quantidade_vendas</th>
+                        <th>total_vendido</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Maria Silva</td>
+                        <td>2</td>
+                        <td>3800.00</td>
+                    </tr>
+                    <tr>
+                        <td>João Souza</td>
+                        <td>1</td>
+                        <td>850.00</td>
+                    </tr>
+                    <tr>
+                        <td>Ana Costa</td>
+                        <td>1</td>
+                        <td>1200.00</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- SLIDE 19: GROUP BY COM LEFT JOIN -->
+        <div class="slide">
+            <div class="part-badge">PARTE 2</div>
+            <h2 class="slide-title">GROUP BY com LEFT JOIN</h2>
+            
+            <div class="content-block">
+                <h3>Incluindo Clientes Sem Vendas nos Totais</h3>
+                <p>Quando combinamos LEFT JOIN com GROUP BY, conseguimos gerar relatórios que incluem registros sem correspondência. Para evitar NULL nas somas, usamos <strong>IFNULL</strong>.</p>
+            </div>
+
+            <div class="code-block">
+<pre><code class="language-sql">SELECT 
+    c.nome AS cliente,
+    COUNT(v.id_venda) AS quantidade_vendas,
+    IFNULL(SUM(v.valor), 0) AS total_vendido
+FROM clientes c
+LEFT JOIN vendas v
+    ON c.id_cliente = v.id_cliente
+GROUP BY c.nome;</code></pre>
+            </div>
+
+            <table class="example-table" style="margin-top: 30px;">
+                <thead>
+                    <tr>
+                        <th>cliente</th>
+                        <th>quantidade_vendas</th>
+                        <th>total_vendido</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Maria Silva</td>
+                        <td>2</td>
+                        <td>3800.00</td>
+                    </tr>
+                    <tr>
+                        <td>João Souza</td>
+                        <td>1</td>
+                        <td>850.00</td>
+                    </tr>
+                    <tr>
+                        <td>Ana Costa</td>
+                        <td>1</td>
+                        <td>1200.00</td>
+                    </tr>
+                    <tr style="background: #3a2a1e;">
+                        <td><strong>Carlos Lima</strong></td>
+                        <td><strong>0</strong></td>
+                        <td><strong>0.00</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="key-concept">
+                <strong>✨ IFNULL:</strong> Converte NULL em 0 para somas. Deixa o relatório limpo e compreensível.
+            </div>
+        </div>
+
+        <!-- SLIDE 20: ERROS COMUNS -->
+        <div class="slide">
+            <div class="part-badge">PARTE 2</div>
+            <h2 class="slide-title">Erros Comuns e Como Evitar</h2>
+            
+            <table class="comparison-table">
+                <tr>
+                    <th>Erro</th>
+                    <th>Por que acontece?</th>
+                    <th>Como corrigir</th>
+                </tr>
+                <tr>
+                    <td><strong>Esquecer ON</strong></td>
+                    <td>MySQL não sabe como ligar as tabelas</td>
+                    <td>Sempre declare a condição após JOIN</td>
+                </tr>
+                <tr>
+                    <td><strong>Coluna errada no ON</strong></td>
+                    <td>Consulta retorna dados incorretos</td>
+                    <td>Relacione PK com FK (chave primária com estrangeira)</td>
+                </tr>
+                <tr>
+                    <td><strong>Não usar alias</strong></td>
+                    <td>Código fica grande e ilegível</td>
+                    <td>Use c para clientes, v para vendas</td>
+                </tr>
+                <tr>
+                    <td><strong>Confundir INNER/LEFT</strong></td>
+                    <td>Resultado exclui registros importantes</td>
+                    <td>INNER = com match; LEFT = todos da esquerda</td>
+                </tr>
+                <tr>
+                    <td><strong>Não tratar NULL</strong></td>
+                    <td>Relatórios com campos vazios</td>
+                    <td>Use IFNULL, COALESCE, ou IS NULL</td>
+                </tr>
+            </table>
+
+            <div class="warning-message" style="margin-top: 30px;">
+                <strong>🚨 Erro Clássico:</strong> Usar INNER JOIN quando você precisava de LEFT JOIN. Seu relatório aparenta estar "incompleto" porque está excluindo clientes sem vendas.
+            </div>
+        </div>
+
+        <!-- SLIDE 21: BOAS PRÁTICAS -->
+        <div class="slide">
+            <div class="part-badge">PARTE 2</div>
+            <h2 class="slide-title">Boas Práticas Profissionais</h2>
+            
+            <div class="content-block">
+                <h3>✅ Como Escrever SQL de Qualidade</h3>
+            </div>
+
+            <div class="two-column">
+                <div class="column">
+                    <h4>Formatação</h4>
+                    <p>✓ Escreva SELECT em várias linhas</p>
+                    <p>✓ Use alias para tabelas</p>
+                    <p>✓ Identifique colunas com tabela</p>
+                </div>
+                <div class="column">
+                    <h4>Lógica</h4>
+                    <p>✓ Confira se ON está correto</p>
+                    <p>✓ Teste com dados reais</p>
+                    <p>✓ Comente código complexo</p>
+                </div>
+            </div>
+
+            <div class="code-block" style="margin-top: 30px;">
+<pre><code class="language-sql">-- ❌ RUIM - Uma linha, sem alias, confuso
+SELECT clientes.nome, vendas.data_venda, vendas.valor FROM clientes INNER JOIN vendas ON clientes.id_cliente = vendas.id_cliente;
+
+-- ✅ BOM - Formatado, alias, legível
+SELECT 
+    c.nome,
+    v.data_venda,
+    v.valor
+FROM clientes c
+INNER JOIN vendas v
+    ON c.id_cliente = v.id_cliente;</code></pre>
+            </div>
+
+            <div class="key-concept">
+                <strong>💡 Lembre-se:</strong> Seu SQL será lido por outras pessoas (ou por você mesmo em 6 meses). Escreva pensando em clareza, não em velocidade.
+            </div>
+        </div>
+
+        <!-- SLIDE 22: EXERCÍCIO PRÁTICO -->
+        <div class="slide">
+            <div class="part-badge">PARTE 2 - EXERCÍCIO</div>
+            <h2 class="slide-title">Exercício Prático Interativo</h2>
+            
+            <div class="exercise-section">
+                <h3>🎯 Desafio: Escreva as Consultas SQL</h3>
+                <p>Baseado na estrutura de dados de CLIENTES e VENDAS que vimos, resolva os exercícios abaixo:</p>
+                <ol>
+                    <li><strong>Listar vendas com nomes dos clientes</strong> (nome, cidade, data, valor)</li>
+                    <li><strong>Todos os clientes</strong> incluindo os sem venda</li>
+                    <li><strong>Apenas clientes sem venda</strong></li>
+                    <li><strong>Vendas de Ibirité</strong> filtradas por cidade</li>
+                    <li><strong>Total por cliente</strong> com GROUP BY</li>
+                    <li><strong>Total incluindo clientes sem venda</strong> com IFNULL</li>
+                </ol>
+            </div>
+
+            <div class="sql-practice">
+                <h4>Exercício 1: Listar vendas com nomes dos clientes</h4>
+                <p style="color: #b0b0b0; margin-bottom: 10px;">Escreva aqui a consulta SQL que mostra nome, cidade, data e valor de todas as vendas:</p>
+                <textarea class="practice-input" id="ex1" placeholder="SELECT..."></textarea>
+                <button class="practice-button" onclick="verificarExercicio(1)">Executar Consulta</button>
+                <div id="resultado1"></div>
+            </div>
+
+            <div class="sql-practice">
+                <h4>Exercício 2: Todos os clientes (com ou sem venda)</h4>
+                <p style="color: #b0b0b0; margin-bottom: 10px;">Use LEFT JOIN para incluir clientes sem venda:</p>
+                <textarea class="practice-input" id="ex2" placeholder="SELECT..."></textarea>
+                <button class="practice-button" onclick="verificarExercicio(2)">Executar Consulta</button>
+                <div id="resultado2"></div>
+            </div>
+
+            <div class="sql-practice">
+                <h4>Exercício 3: Clientes sem venda</h4>
+                <p style="color: #b0b0b0; margin-bottom: 10px;">Use LEFT JOIN + WHERE IS NULL:</p>
+                <textarea class="practice-input" id="ex3" placeholder="SELECT..."></textarea>
+                <button class="practice-button" onclick="verificarExercicio(3)">Executar Consulta</button>
+                <div id="resultado3"></div>
+            </div>
+        </div>
+
+        <!-- SLIDE 23: MAIS EXERCÍCIOS -->
+        <div class="slide">
+            <div class="part-badge">PARTE 2 - EXERCÍCIO (cont.)</div>
+            <h2 class="slide-title">Exercícios Continuação</h2>
+
+            <div class="sql-practice">
+                <h4>Exercício 4: Vendas de Ibirité</h4>
+                <p style="color: #b0b0b0; margin-bottom: 10px;">Mostre as vendas apenas de clientes da cidade Ibirité:</p>
+                <textarea class="practice-input" id="ex4" placeholder="SELECT..."></textarea>
+                <button class="practice-button" onclick="verificarExercicio(4)">Executar Consulta</button>
+                <div id="resultado4"></div>
+            </div>
+
+            <div class="sql-practice">
+                <h4>Exercício 5: Total por cliente</h4>
+                <p style="color: #b0b0b0; margin-bottom: 10px;">Use GROUP BY para mostrar quantidade de vendas e total vendido por cliente:</p>
+                <textarea class="practice-input" id="ex5" placeholder="SELECT..."></textarea>
+                <button class="practice-button" onclick="verificarExercicio(5)">Executar Consulta</button>
+                <div id="resultado5"></div>
+            </div>
+
+            <div class="sql-practice">
+                <h4>Exercício 6: Total com clientes sem venda</h4>
+                <p style="color: #b0b0b0; margin-bottom: 10px;">Inclua clientes sem venda no total (use LEFT JOIN + IFNULL):</p>
+                <textarea class="practice-input" id="ex6" placeholder="SELECT..."></textarea>
+                <button class="practice-button" onclick="verificarExercicio(6)">Executar Consulta</button>
+                <div id="resultado6"></div>
+            </div>
+        </div>
+
+        <!-- SLIDE 24: PREPARAÇÃO VIEW -->
+        <div class="slide">
+            <div class="part-badge">PARTE 2</div>
+            <h2 class="slide-title">Próximo Conteúdo: VIEW</h2>
+            
+            <div class="content-block">
+                <h3>Por Que aprender VIEW?</h3>
+                <p>Uma <strong>VIEW</strong> é uma consulta SQL <strong>salva no banco de dados</strong>. Depois que você domina JOIN, fica fácil aprender VIEW, pois muitas VIEWs armazenam consultas com JOIN!</p>
+            </div>
+
+            <div class="key-concept" style="margin-top: 30px;">
+                <strong>💡 Vantagem:</strong> Em vez de escrever a mesma consulta com JOIN toda vez, você cria uma VIEW e a reutiliza em relatórios, dashboards e sistemas.
+            </div>
+
+            <div class="code-block">
+<pre><code class="language-sql">-- Criar uma VIEW que armazena uma consulta com JOIN
+CREATE VIEW vw_vendas_clientes AS
+SELECT 
+    v.id_venda,
+    c.nome AS cliente,
+    c.cidade,
+    v.data_venda,
+    v.valor
+FROM vendas v
+INNER JOIN clientes c
+    ON v.id_cliente = c.id_cliente;
+
+-- Depois, usar a VIEW é simples:
+SELECT * FROM vw_vendas_clientes;</code></pre>
+            </div>
+
+            <div class="success-message">
+                <strong>✅ Resultado:</strong> Uma VIEW que combina dados de vendas com informações de clientes. Profissional, reutilizável e eficiente!
+            </div>
+        </div>
+
+        <!-- SLIDE 25: RESUMO FINAL -->
+        <div class="slide">
+            <div class="part-badge">RESUMO GERAL</div>
+            <h2 class="slide-title">Resumo Completo da Aula</h2>
+            
+            <div class="content-block">
+                <h3>✅ Conceitos Dominados</h3>
+                <ul class="objectives-list">
+                    <li>Dados em tabelas separadas: organização, desempenho, integridade</li>
+                    <li>Chave primária (PK) e chave estrangeira (FK) para relacionamentos</li>
+                    <li>INNER JOIN: mostra apenas registros com correspondência em ambas tabelas</li>
+                    <li>LEFT JOIN: mantém todos os registros da tabela esquerda</li>
+                    <li>Encontrar registros sem relacionamento com LEFT JOIN + WHERE IS NULL</li>
+                    <li>Filtros (WHERE), ordenação (ORDER BY) e agrupamento (GROUP BY) em JOINs</li>
+                    <li>Tratamento de NULL com IFNULL e COALESCE</li>
+                    <li>Alias para código limpo e profissional</li>
+                </ul>
+            </div>
+
+            <div class="key-concept" style="margin-top: 30px;">
+                <strong>🎓 Aprendizado Principal:</strong><br>
+                JOIN é o recurso que <span class="highlight-yellow">transforma dados separados em informações completas</span>. É fundamental para relatórios, dashboards, e qualquer análise que cruze dados de múltiplas tabelas.
+            </div>
+
+            <div class="success-message" style="margin-top: 30px;">
+                <strong>🚀 Próximos Passos:</strong><br>
+                • Praticar com seus próprios dados<br>
+                • Aprender VIEW para reutilizar consultas<br>
+                • Explorar FULL OUTER JOIN (raro, mas útil)<br>
+                • Trabalhar com múltiplos JOINs na mesma consulta
+            </div>
+        </div>
+
+        <!-- SLIDE 26: AGRADECIMENTOS -->
+        <div class="slide">
+            <div class="header-section" style="margin: -60px -80px -60px -80px;">
+                <h1>Obrigado pela Atenção!</h1>
+                <p style="font-size: 1.3em; margin-top: 40px;">
+                    Você está pronto para trabalhar com JOINs<br>
+                    em aplicações profissionais.
+                </p>
+                <p style="font-size: 1em; margin-top: 50px;">
+                    <strong>Professor Reinaldo Rodrigues</strong><br>
+                    Diretor de Tecnologia da Informação | Prefeitura Municipal de Ibirité<br>
+                    Docente | Fundação Helena Antipoff - ETSSA<br>
+                    PRONATEC/FIC - Administrador de Banco de Dados
+                </p>
+                <p style="margin-top: 60px; opacity: 0.8;">
+                    "O conhecimento é o recurso mais valioso."<br>
+                    Construa sistemas inteligentes com dados bem organizados.
+                </p>
+            </div>
+        </div>
+
+        <!-- NAVEGAÇÃO -->
+        <div class="navigation">
+            <button class="nav-button" id="prevBtn" onclick="mudarSlide(-1)">← Anterior</button>
+            <span class="slide-counter"><span id="slideAtual">1</span> / 26</span>
+            <button class="nav-button" id="nextBtn" onclick="mudarSlide(1)">Próximo →</button>
+        </div>
+    </div>
+
+    <script>
+        let slideAtual = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        // Dados para simular as consultas SQL
+        const clientes = [
+            { id_cliente: 1, nome: 'Maria Silva', cidade: 'Ibirité' },
+            { id_cliente: 2, nome: 'João Souza', cidade: 'Contagem' },
+            { id_cliente: 3, nome: 'Ana Costa', cidade: 'Belo Horizonte' },
+            { id_cliente: 4, nome: 'Carlos Lima', cidade: 'Ibirité' }
+        ];
+
+        const vendas = [
+            { id_venda: 1, id_cliente: 1, data_venda: '2026-06-01', valor: 1500.00 },
+            { id_venda: 2, id_cliente: 2, data_venda: '2026-06-03', valor: 850.00 },
+            { id_venda: 3, id_cliente: 1, data_venda: '2026-06-10', valor: 2300.00 },
+            { id_venda: 4, id_cliente: 3, data_venda: '2026-06-15', valor: 1200.00 }
+        ];
+
+        function mudarSlide(direcao) {
+            slideAtual += direcao;
+            
+            if (slideAtual < 0) slideAtual = 0;
+            if (slideAtual >= totalSlides) slideAtual = totalSlides - 1;
+
+            atualizarSlides();
+        }
+
+        function atualizarSlides() {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[slideAtual].classList.add('active');
+
+            document.getElementById('slideAtual').textContent = slideAtual + 1;
+            document.getElementById('prevBtn').disabled = slideAtual === 0;
+            document.getElementById('nextBtn').disabled = slideAtual === totalSlides - 1;
+
+            // Scroll para topo
+            document.querySelector('.slide.active').scrollTop = 0;
+        }
+
+        function criarTabela(dados) {
+            if (!dados || dados.length === 0) {
+                return '<p style="color: #ffb74d;">Nenhum resultado encontrado</p>';
+            }
+
+            const colunas = Object.keys(dados[0]);
+            let html = '<table class="example-table"><thead><tr>';
+            
+            colunas.forEach(col => {
+                html += `<th>${col}</th>`;
+            });
+            html += '</tr></thead><tbody>';
+
+            dados.forEach(linha => {
+                html += '<tr>';
+                colunas.forEach(col => {
+                    let valor = linha[col];
+                    if (valor === null || valor === undefined) {
+                        valor = '<span class="highlight-yellow">NULL</span>';
+                    }
+                    html += `<td>${valor}</td>`;
+                });
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            return html;
+        }
+
+        function verificarExercicio(numero) {
+            const inputId = `ex${numero}`;
+            const resultadoId = `resultado${numero}`;
+            const sql = document.getElementById(inputId).value.trim().toUpperCase();
+            const resultDiv = document.getElementById(resultadoId);
+
+            let resultado = [];
+            let mensagem = '';
+
+            try {
+                if (numero === 1) {
+                    // INNER JOIN
+                    if (sql.includes('INNER JOIN') || (sql.includes('JOIN') && !sql.includes('LEFT'))) {
+                        resultado = vendas.map(v => {
+                            const cliente = clientes.find(c => c.id_cliente === v.id_cliente);
+                            return {
+                                nome: cliente.nome,
+                                cidade: cliente.cidade,
+                                data_venda: v.data_venda,
+                                valor: v.valor
+                            };
+                        });
+                        mensagem = '<div class="success-message">✅ Correto! INNER JOIN mostra apenas vendas com clientes.</div>';
+                    } else {
+                        mensagem = '<div class="warning-message">⚠️ Tente usar INNER JOIN ou simplesmente JOIN</div>';
+                    }
+                } else if (numero === 2) {
+                    // LEFT JOIN
+                    if (sql.includes('LEFT')) {
+                        resultado = clientes.map(c => {
+                            const venda = vendas.find(v => v.id_cliente === c.id_cliente);
+                            return {
+                                nome: c.nome,
+                                cidade: c.cidade,
+                                data_venda: venda ? venda.data_venda : null,
+                                valor: venda ? venda.valor : null
+                            };
+                        });
+                        mensagem = '<div class="success-message">✅ Excelente! LEFT JOIN mantém todos os clientes.</div>';
+                    } else {
+                        mensagem = '<div class="warning-message">⚠️ Tente usar LEFT JOIN para manter todos os clientes</div>';
+                    }
+                } else if (numero === 3) {
+                    // Clientes sem venda
+                    if (sql.includes('IS NULL')) {
+                        resultado = clientes.filter(c => !vendas.some(v => v.id_cliente === c.id_cliente))
+                            .map(c => ({ nome: c.nome, cidade: c.cidade }));
+                        mensagem = '<div class="success-message">✅ Perfeito! Encontrou clientes sem venda usando IS NULL.</div>';
+                    } else {
+                        mensagem = '<div class="warning-message">⚠️ Use WHERE v.id_venda IS NULL para encontrar sem correspondência</div>';
+                    }
+                } else if (numero === 4) {
+                    // Vendas de Ibirité
+                    if (sql.includes('IBIRITÉ') || sql.includes('WHERE')) {
+                        resultado = vendas.map(v => {
+                            const cliente = clientes.find(c => c.id_cliente === v.id_cliente);
+                            return {
+                                nome: cliente.nome,
+                                cidade: cliente.cidade,
+                                data_venda: v.data_venda,
+                                valor: v.valor
+                            };
+                        }).filter(r => r.cidade === 'Ibirité');
+                        mensagem = '<div class="success-message">✅ Certo! Filtrado para mostrar apenas Ibirité.</div>';
+                    } else {
+                        mensagem = '<div class="warning-message">⚠️ Use WHERE c.cidade = \'Ibirité\'</div>';
+                    }
+                } else if (numero === 5) {
+                    // GROUP BY
+                    if (sql.includes('GROUP BY')) {
+                        const grupos = {};
+                        vendas.forEach(v => {
+                            const cliente = clientes.find(c => c.id_cliente === v.id_cliente);
+                            if (!grupos[cliente.nome]) {
+                                grupos[cliente.nome] = { quantidade: 0, total: 0 };
+                            }
+                            grupos[cliente.nome].quantidade += 1;
+                            grupos[cliente.nome].total += v.valor;
+                        });
+                        resultado = Object.keys(grupos).map(nome => ({
+                            cliente: nome,
+                            quantidade_vendas: grupos[nome].quantidade,
+                            total_vendido: grupos[nome].total.toFixed(2)
+                        }));
+                        mensagem = '<div class="success-message">✅ Excelente! GROUP BY agregou os dados por cliente.</div>';
+                    } else {
+                        mensagem = '<div class="warning-message">⚠️ Use GROUP BY c.nome e COUNT(), SUM()</div>';
+                    }
+                } else if (numero === 6) {
+                    // GROUP BY com LEFT JOIN
+                    if (sql.includes('LEFT') && sql.includes('GROUP BY')) {
+                        const grupos = {};
+                        clientes.forEach(c => {
+                            grupos[c.nome] = { quantidade: 0, total: 0 };
+                        });
+                        vendas.forEach(v => {
+                            const cliente = clientes.find(c => c.id_cliente === v.id_cliente);
+                            grupos[cliente.nome].quantidade += 1;
+                            grupos[cliente.nome].total += v.valor;
+                        });
+                        resultado = Object.keys(grupos).map(nome => ({
+                            cliente: nome,
+                            quantidade_vendas: grupos[nome].quantidade,
+                            total_vendido: grupos[nome].total.toFixed(2)
+                        }));
+                        mensagem = '<div class="success-message">✅ Perfeito! Incluiu clientes sem venda com total 0.</div>';
+                    } else {
+                        mensagem = '<div class="warning-message">⚠️ Use LEFT JOIN + IFNULL para manter clientes sem venda</div>';
+                    }
+                }
+
+                if (resultado.length > 0) {
+                    resultDiv.innerHTML = mensagem + criarTabela(resultado);
+                } else if (mensagem) {
+                    resultDiv.innerHTML = mensagem;
+                }
+            } catch (erro) {
+                resultDiv.innerHTML = `<div class="warning-message">⚠️ Erro na consulta. Verifique a sintaxe SQL.</div>`;
+            }
+        }
+
+        // Inicializar
+        atualizarSlides();
+
+        // Navegação com teclado
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') mudarSlide(-1);
+            if (e.key === 'ArrowRight') mudarSlide(1);
+        });
+    </script>
+</body>
+</html>
